@@ -1,0 +1,23 @@
+[Unit]
+Description=Metabase BI
+After=network-online.target local-fs.target user@%U.service metabase-volume.service
+Wants=network-online.target metabase-volume.service
+
+[Container]
+nvironmentFile = /etc/metabase/container.env
+ContainerName = metabase
+# Control image to load from the configuration file
+Image = ${METABASE_IMAGE}:${METABASE_VERSION}
+Volume = metabase.volume:/var/lib/metabase
+#TODO check if this is needed Network = metabase.network
+PublishPort = ${METABASE_HOST_PORT}:${METABASE_CONTAINER_PORT}
+
+[Service]
+User = metabase
+Group = metabase
+EnvironmentFile=/etc/metabase/container.env
+Restart = always
+TimeoutStartSec = 30
+
+[Install]
+WantedBy = multi-user.target default.target
